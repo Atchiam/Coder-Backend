@@ -1,22 +1,19 @@
 class ProductManager {
     constructor() {
         this.products = [];
-        this.id = 1;
     }
 
-    addProduct (titulo, descripcion, precio, imagen, stock) {
-        let idprod = this.products.find(p => p.id === this.id)
-        let valid  = [titulo, descripcion, precio, imagen, stock]
+    addProduct (titulo, descripcion, precio, imagen, stock, code) {
+        let idprod = this.products.find(p => p.id === Product.code)
+        let valid  = [titulo, descripcion, precio, imagen, stock, code]
 
         if(idprod){
             console.log("El ID del producto ya se encuentra en uso");
         }else{
-            if(valid.includes(null)){
+            if(valid.includes(null)||valid.includes("")||valid.includes(undefined)){
                 console.log("Todos los campos deben estar completos");
             }else{
-                let id = this.id
-                const  nuevoProducto = new Product(titulo, descripcion, precio, imagen, stock, id);
-                this.id += 1
+                let nuevoProducto = new Product(titulo, descripcion, precio, imagen, stock, code);
                 this.products.push(nuevoProducto)
             }
         }
@@ -27,30 +24,40 @@ class ProductManager {
     }
 
     getProductByID(id){
-        this.products.find(i => i.code === id) ? console.log(this.products.filter(i => i.code === id)) :
-        console.log("“El elemento buscado no se encuentra, prueve con otro”");
+        this.products.find(i => i.id === id) ? console.log(this.products.filter(i => i.id === id)) :
+        console.log("“El elemento buscado no se encuentra, pruebe con otro”");
     }
 }
-
 class Product {
-    constructor(titulo, descripcion, precio, imagen, stock, id) {
+    constructor(titulo, descripcion, precio, imagen, stock, code) {
         this.title = titulo;
         this.description = descripcion;
         this.price = precio;
         this.thumbnail = imagen;
-        this.code = id;
+        this.code = code;
+        this.id = Product.addId();
         this.stock = stock;
+    }
+static addId() {
+        if(this.idIncrement) {
+            this.idIncrement++
+        } else {
+            this.idIncrement = 1
+        }
+        return this.idIncrement
     }
 }
 
 const prod1 = new ProductManager();
 
-prod1.addProduct("yerbaMaty", "la mejor", 500, "imagenchingona", 80)
-prod1.addProduct("yerbaAye", "no me hacen follow", 900, "imagenchingona", 90)
-prod1.addProduct("yerbaBraian", "la mejor", 500, "imagenchingona", 80)
-prod1.addProduct("yerbaGaby", "no me hacen follow", 900, "imagenchingona", 90)
-prod1.addProduct("yerbaFranco", null , 900, "imagenchingona", 90)
-
+prod1.addProduct("yerbaMaty", "la mejor", 500, "imagenchingona", 80, 12)
+prod1.addProduct("yerbaAye", "no me hacen follow", 900, "imagenchingona", 90, 13)
+prod1.addProduct("yerbaMMMaty", "la mejor", 500, "imagenchingona", 80, 15)
+prod1.addProduct("yerbaAye", "no me hacen follow", 900, "imagenchingona", 90, 17)
+prod1.addProduct("yerbaBraian", null, 500, "imagenchingona", 80,1)
+prod1.addProduct("yerbaGaby", "", 900, "imagenchingona", 90,2)
+prod1.addProduct("yerbaFranco", undefined , 900, "imagenchingona", 90,3)
+console.log("-----------------------------------------");
 console.log(prod1.getProducts());
 console.log("-----------------------------------------");
-console.log(prod1.getProductByID(5))
+console.log(prod1.getProductByID(3))
