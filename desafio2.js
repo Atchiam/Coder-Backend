@@ -70,18 +70,17 @@ class ProductManager {
     }
 
     async updateProduct(id, titulo, descripcion, precio, imagen, stock, code) {
-        const contenido = await fs.readFile(this.path, "utf-8");
-        const aux = JSON.parse(contenido);
-        if (aux.some(producto => producto.id === id)){
-            let indice = aux.findIndex(producto => producto.id === id)
-            aux[indice].title      = titulo
-            aux[indice].description= descripcion
-            aux[indice].price      = precio
-            aux[indice].thumbnail  = imagen
-            aux[indice].code       = code
-            aux[indice].stock      = stock
-            console.log(aux);
-            await fs.writeFile(this.path, JSON.stringify(aux), "utf-8");
+        const read = await fs.readFile(this.path, "utf-8");
+        const data = JSON.parse(read);
+        if (data.some(producto => producto.id === id)){
+            let indice = data.findIndex(producto => producto.id === id)
+            data[indice].title      = titulo
+            data[indice].description= descripcion
+            data[indice].price      = precio
+            data[indice].thumbnail  = imagen
+            data[indice].code       = code
+            data[indice].stock      = stock
+            await fs.writeFile(this.path, JSON.stringify(data), "utf-8");
         }else{
             console.log("producto no encontrado");
         }
