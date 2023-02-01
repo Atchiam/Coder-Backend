@@ -48,7 +48,7 @@ class ProductManager {
         if (product) {
             return (product);
         } else {
-            return ("No se encontro el producto");
+            return (`El id seleccionado no corresponde a ninguno de nuestros productos`);
         }
         } catch (error) {
         throw error;
