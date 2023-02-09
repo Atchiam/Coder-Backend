@@ -1,13 +1,22 @@
-import {promises as fs} from "fs"
+import {promises as fs} from 'fs'
 
-class ProductManager {
+export class ProductManager {
     constructor(path) {
-        this.path = path;
+        this.path = path
+    }
+
+    static incrementarID() {
+        if(this.idIncrement) {
+            this.idIncrement++
+        } else {
+            this.idIncrement = 1
+        }
+        return this.idIncrement
     }
 
     async addProduct (titulo, descripcion, precio, imagen, stock, code) {
         try{
-            let valid  = [titulo, descripcion, precio, imagen, stock, code]
+            let valid  = [titulo, descripcion, precio, stock, code]
             const read = await fs.readFile(this.path, "utf8");
             const data = JSON.parse(read);
             const objCode = data.find((product) => product.code == code);
@@ -18,9 +27,8 @@ class ProductManager {
                 if(valid.includes(null)||valid.includes("")||valid.includes(undefined)){
                     console.log("Todos los campos deben estar completos");
                 }else{
-                    let id;
-                    id = data.length + 1;
-                    let nuevoProducto = new Product(titulo, descripcion, precio, imagen, stock, code, id);
+                    id = ProductManager.incrementarID()
+                    let nuevoProducto = new Product(titulo, descripcion, precio, imagen ?? "sin img", stock, code,id);
                     data.push(nuevoProducto);
                     await fs.writeFile(this.path, JSON.stringify(data), "utf-8");
                     
@@ -56,16 +64,13 @@ class ProductManager {
     }
 
     async deleteProduct(id) {
-        try {
-        const read = await fs.readFile(this.path, "utf-8");
-        const data = JSON.parse(read);
-        const newData = data.filter((product) => product.id !== id);
-        await fs.writeFile(this.path, JSON.stringify(newData), "utf-8");
-        return console.log(
-            `El producto ha sido eliminado exitosamente`
-        );
-        } catch (error) {
-        throw error;
+        const prods = JSON.parse(await fs.readFile(this.path, 'utf-8'))
+        if(prods.some(prod => prod.id === parseInt(id))) {
+            const prodsFiltrados = prods.filter(prod => prod.id !== parseInt(id))
+            await fs.writeFile(this.path, JSON.stringify(prodsFiltrados))
+            return "Producto eliminado"
+        } else {
+            return "Producto no encontrado"
         }
     }
 
@@ -82,7 +87,7 @@ class ProductManager {
             data[indice].stock      = stock
             await fs.writeFile(this.path, JSON.stringify(data), "utf-8");
         }else{
-            console.log("producto no encontrado");
+            return console.log("producto no encontrado");
         }
 
     }
@@ -97,7 +102,6 @@ class Product {
         this.code = code;
         this.id = id;
         this.stock = stock;
+        this.status = true
     }
 }
-
-export default ProductManager;

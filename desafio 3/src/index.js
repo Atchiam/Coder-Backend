@@ -1,35 +1,38 @@
-import ProductManager from "./ProductManager.js";
 import express from "express";
+import routerProduct from "./routes/productos.routes.js";
+import { __dirname } from "./path.js";
+import multer from 'multer'
 
-const app  = express();
-const PORT = 4000;
-const manager= new ProductManager("./src/productos.json");
-app.use(express.urlencoded({ extended: true }));
-
-app.get("/", (req,res)=>{
-    res.send("Desafio numero 3, server con express "+ PORT)
-});
-
-app.get("/catalogo", async (req,res)=>{
-    const products = await manager.getProducts();
-    let limit  =parseInt(req.query.limit);
-    let data;
-    console.log(limit)
-    if (limit) {
-        if(limit < 0 || limit > products.length){
-            data=`el limite debe ser un numero positivo y menor al numero ${products.length}`
-        }else{data = products.slice(0, limit);}
-    } else {
-        data = products;
+//const upload = multer({dest:'src/public/img'}) Forma basica de utilizar multer
+const storage = multer.diskStorage({
+    //donde va destinado el archivo subido
+    destination: (req,file, cb) => {
+        cb(null, 'src/public/img')
+    },
+    //nombre del archivo
+    filename: (req,file,cb) => {
+        cb(null, `${file.originalname}`)
     }
-    res.send(data);
-});
+})
 
-app.get("/catalogo/:id", async(req,res)=>{
-    const product = await manager.getProductByID(parseInt(req.params.id))
-    res.send(product)
-});
+const upload = multer({storage:storage})
 
-app.listen(PORT,()=>{
-    console.log(`servidor en "localhost:${PORT}"`)
-});
+const app = express()
+const PORT = 8080 
+
+//Middlewares
+app.use(express.json()) 
+app.use(express.urlencoded({extended: true}))
+
+//Routes
+app.use('/static', express.static(__dirname + '/public'))
+app.use('/api/products', routerProduct)
+app.post('/upload',upload.single('product'), (req,res) => {
+    console.log(req.body)
+    console.log(req.file)
+    res.send("Imagen cargada")
+})
+
+app.listen(PORT, () => {
+    console.log(`Server on port ${PORT}`)
+})
