@@ -23,15 +23,19 @@ export class CarritoManager {
             if (carrito) {
                 let indiceCarrito = dataCarrito.findIndex((carrito) => carrito.idCarrito == idCarrito)
                 let indiceProd = dataCarrito[indiceCarrito].prod.findIndex((producto) => producto.idProd == idProducto)
-                console.log(indiceCarrito);
+                let stockProd = JSON.parse(await fs.readFile('src/models/productos.json', "utf8")).find((Prod) => Prod.id === idProducto).stock;
                 if (indiceProd === -1) {
                     dataCarrito[indiceCarrito].prod.push({"idProd":idProducto,"cantidad":1});
                     await fs.writeFile(this.path, JSON.stringify(dataCarrito), "utf-8");
                     return (`tu producto fue agregado con exito`);
                 } else {
-                    dataCarrito[indiceCarrito].prod[indiceProd].cantidad += 1
-                    await fs.writeFile(this.path, JSON.stringify(dataCarrito), "utf-8");
-                    return (`sumaste un producto`);
+                    if (dataCarrito[indiceCarrito].prod[indiceProd].cantidad < stockProd) {
+                        dataCarrito[indiceCarrito].prod[indiceProd].cantidad += 1
+                        await fs.writeFile(this.path, JSON.stringify(dataCarrito), "utf-8");
+                        return (`sumaste un producto`);
+                    }else{
+                        return (`no podes sumar mas productos que los que hay en stock`);
+                    }
                 }
             } else {
                 return (`El id seleccionado no corresponde a ninguno de nuestros carritos`);
