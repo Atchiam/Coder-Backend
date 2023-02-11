@@ -41,8 +41,15 @@ routerProduct.delete('/:id', async (req, res) => {
 })
 
 routerProduct.put('/:id', async (req, res) => { 
-    let mensaje = await productManager.updateProduct(req.params.id, req.body)
-    res.send(mensaje)
+    let titulo = req.body.title;
+    let descripcion = req.body.description;
+    let precio = req.body.price;
+    let imagen = req.body.imagen;
+    let stock = req.body.stock;
+    let code = req.body.code;
+    let id = parseInt(req.params.id);
+    let updateProduct = await productManager.updateProduct(id, titulo, descripcion, precio, imagen, stock, code)
+    res.send("sdf")
 })
 
 export default routerProduct

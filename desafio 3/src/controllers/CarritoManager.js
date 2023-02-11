@@ -5,105 +5,61 @@ export class CarritoManager {
         this.path = path
     }
 
-    static incrementarID() {
-        if(this.idIncrement) {
-            this.idIncrement++
-        } else {
-            this.idIncrement = 1
-        }
-        return this.idIncrement
-    }
-
-    async addProduct (titulo, descripcion, precio, imagen, stock, code) {
+    async crearCarrito (){
         try{
-            let valid  = [titulo, descripcion, precio, imagen, stock, code]
-            const read = await fs.readFile(this.path, "utf8");
-            const data = JSON.parse(read);
-            const objCode = data.find((product) => product.code == code);
-
-            if(objCode){
-                throw error;
-            }else{
-                if(valid.includes(null)||valid.includes("")||valid.includes(undefined)){
-                    console.log("Todos los campos deben estar completos");
-                }else{
-                    id = ProductManager.incrementarID()
-                    let nuevoProducto = new Product(titulo, descripcion, precio, imagen, stock, code, id);
-                    data.push(nuevoProducto);
-                    await fs.writeFile(this.path, JSON.stringify(data), "utf-8");
-                    
+            const data = JSON.parse(await fs.readFile(this.path, "utf8"));
+            let idCarrito = data.length > 0 ? data[parseInt(data.length) - 1].idCarrito + 1 :  1
+            let nuevocarrito = new Carrito(idCarrito);
+            data.push(nuevocarrito);
+            await fs.writeFile(this.path, JSON.stringify(data), "utf-8");
+        }catch(error){
+            console.log(error);
+        }
+    }
+    async addProductInCarrito(idCarrito,idProducto) {
+        try{
+            const dataCarrito = JSON.parse(await fs.readFile(this.path, "utf8"));
+            const carrito = dataCarrito.find((carrito) => carrito.idCarrito == idCarrito);
+            if (carrito) {
+                let indiceCarrito = dataCarrito.findIndex((carrito) => carrito.idCarrito == idCarrito)
+                let indiceProd = dataCarrito[indiceCarrito].prod.findIndex((producto) => producto.idProd == idProducto)
+                console.log(indiceCarrito);
+                if (indiceProd === -1) {
+                    dataCarrito[indiceCarrito].prod.push({"idProd":idProducto,"cantidad":1});
+                    await fs.writeFile(this.path, JSON.stringify(dataCarrito), "utf-8");
+                    return (`tu producto fue agregado con exito`);
+                } else {
+                    dataCarrito[indiceCarrito].prod[indiceProd].cantidad += 1
+                    await fs.writeFile(this.path, JSON.stringify(dataCarrito), "utf-8");
+                    return (`sumaste un producto`);
                 }
+            } else {
+                return (`El id seleccionado no corresponde a ninguno de nuestros carritos`);
             }
         }catch (error){
-            console.log("El code del producto ya se encuentra en uso" + error);
+            console.log(error);
         };
     }
 
-    async getProducts() {
+    async getCarritoByID(id) {
         try {
-        const read = await fs.readFile(this.path, "utf8");
-        return (JSON.parse(read)); 
-        } catch (error) {
-        throw error;
-        }
-    }
-
-    async getProductByID(id) {
-        try {
-        const read = await fs.readFile(this.path, "utf-8");
-        const data = JSON.parse(read);
-        const product = data.find((product) => product.id === id);
-        if (product) {
-            return (product);
+        let data = JSON.parse(await fs.readFile(this.path, "utf8"));
+        let carrito = data.find((carrito) => carrito.idCarrito === id);
+        if (carrito) {
+            return (carrito);
         } else {
-            return (`El id seleccionado no corresponde a ninguno de nuestros productos`);
+            return (`El id seleccionado no corresponde a ninguno de nuestros carritos`);
         }
         } catch (error) {
         throw error;
         }
     }
 
-    async deleteProduct(id) {
-        try {
-        const read = await fs.readFile(this.path, "utf-8");
-        const data = JSON.parse(read);
-        const newData = data.filter((product) => product.id !== id);
-        await fs.writeFile(this.path, JSON.stringify(newData), "utf-8");
-        return console.log(
-            `El producto ha sido eliminado exitosamente`
-        );
-        } catch (error) {
-        throw error;
-        }
-    }
-
-    async updateProduct(id, titulo, descripcion, precio, imagen, stock, code) {
-        const read = await fs.readFile(this.path, "utf-8");
-        const data = JSON.parse(read);
-        if (data.some(producto => producto.id === id)){
-            let indice = data.findIndex(producto => producto.id === id)
-            data[indice].title      = titulo
-            data[indice].description= descripcion
-            data[indice].price      = precio
-            data[indice].thumbnail  = imagen
-            data[indice].code       = code
-            data[indice].stock      = stock
-            await fs.writeFile(this.path, JSON.stringify(data), "utf-8");
-        }else{
-            console.log("producto no encontrado");
-        }
-
-    }
 }
 
-class Product {
-    constructor(titulo, descripcion, precio, imagen, stock, code, id) {
-        this.title = titulo;
-        this.description = descripcion;
-        this.price = precio;
-        this.thumbnail = imagen;
-        this.code = code;
-        this.id = id;
-        this.stock = stock;
+class Carrito {
+    constructor(idCarrito) {
+        this.idCarrito = idCarrito;
+        this.prod = [];
     }
 }

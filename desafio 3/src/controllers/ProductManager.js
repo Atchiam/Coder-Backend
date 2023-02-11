@@ -5,21 +5,13 @@ export class ProductManager {
         this.path = path
     }
 
-    static incrementarID() {
-        if(this.idIncrement) {
-            this.idIncrement++
-        } else {
-            this.idIncrement = 1
-        }
-        return this.idIncrement
-    }
-
     async addProduct (titulo, descripcion, precio, imagen, stock, code) {
         try{
             let valid  = [titulo, descripcion, precio, stock, code]
             const read = await fs.readFile(this.path, "utf8");
             const data = JSON.parse(read);
             const objCode = data.find((product) => product.code == code);
+            let id
 
             if(objCode){
                 throw error;
@@ -27,7 +19,7 @@ export class ProductManager {
                 if(valid.includes(null)||valid.includes("")||valid.includes(undefined)){
                     console.log("Todos los campos deben estar completos");
                 }else{
-                    id = ProductManager.incrementarID()
+                    data.length > 0 ? id=data[parseInt(data.length) - 1].id + 1 : id = 1
                     let nuevoProducto = new Product(titulo, descripcion, precio, imagen ?? "sin img", stock, code,id);
                     data.push(nuevoProducto);
                     await fs.writeFile(this.path, JSON.stringify(data), "utf-8");
@@ -74,7 +66,7 @@ export class ProductManager {
         }
     }
 
-    async updateProduct(id, titulo, descripcion, precio, imagen, stock, code) {
+    async updateProduct(id, titulo, descripcion, precio, imagen, stock, code,status) {
         const read = await fs.readFile(this.path, "utf-8");
         const data = JSON.parse(read);
         if (data.some(producto => producto.id === id)){
@@ -82,14 +74,14 @@ export class ProductManager {
             data[indice].title      = titulo
             data[indice].description= descripcion
             data[indice].price      = precio
-            data[indice].thumbnail  = imagen
+            data[indice].thumbnail  = imagen ?? ["src/public/img/default.jpg"]
             data[indice].code       = code
             data[indice].stock      = stock
+            data[indice].status     = status ?? true
             await fs.writeFile(this.path, JSON.stringify(data), "utf-8");
         }else{
             return console.log("producto no encontrado");
         }
-
     }
 }
 
