@@ -49,7 +49,7 @@ routerProduct.put('/:id', async (req, res) => {
     let code = req.body.code;
     let id = parseInt(req.params.id);
     let updateProduct = await productManager.updateProduct(id, titulo, descripcion, precio, imagen, stock, code)
-    res.send("sdf")
+    res.send(`se modifico exitosamente ${updateProduct}`)
 })
 
 export default routerProduct

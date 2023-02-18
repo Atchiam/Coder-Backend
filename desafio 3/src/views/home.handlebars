@@ -1,1 +1,12 @@
-<h1>holis como estas?</h1>
+<h1>{{titulo}}</h1>
+<div class="grid m-2 gap-3 row">
+{{#each products}}
+    <div class="card text-center p-2 g-col-6" style="width: 14rem;">
+        <img src="{{this.thumbnail}}" alt="Pastas" class="card-img-top">
+        <h3 class="text-center ">{{this.title}}</h3>
+        <p class="text-center card-text">{{this.description}}</p>
+        <p class="card-title fs-5">precio: {{this.price}}</p>
+        <button class="btn btn-primary m-2" id= "{{this.id}}">Agregar al Carrito</button>
+    </div>
+{{/each}}
+</div>

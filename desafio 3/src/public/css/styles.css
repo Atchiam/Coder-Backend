@@ -1,0 +1,47 @@
+.cuestionario__body {
+    margin: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.cuestionario__part {
+width: auto;
+display: flex;
+flex-direction: column;
+align-items: stretch;
+font-size: 1.5rem;
+margin: 0.3rem;
+padding: 1.5rem;
+}
+
+.cuestionario__completar {
+display: flex;
+width: 30rem;
+flex-direction: row;
+flex-wrap: wrap;
+align-content: center;
+justify-content: center;
+align-items: center;
+}
+
+.cuestionario__btn {
+width: auto;
+color: #CC9544;
+margin: 1rem;
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+align-content: space-around;
+justify-content: space-between;
+align-items: baseline;
+}
+
+.btn__cuestionario {
+display: flex;
+flex-direction: column;
+flex-wrap: wrap;
+justify-content: space-around;
+}
+

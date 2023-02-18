@@ -23,6 +23,7 @@ export class ProductManager {
                     let nuevoProducto = new Product(titulo, descripcion, precio, imagen ?? "sin img", stock, code,id);
                     data.push(nuevoProducto);
                     await fs.writeFile(this.path, JSON.stringify(data), "utf-8");
+                    return (`El Producto: ${nuevoProducto} se creo con exito`)
                     
                 }
             }
@@ -80,7 +81,7 @@ export class ProductManager {
             data[indice].status     = status ?? true
             await fs.writeFile(this.path, JSON.stringify(data), "utf-8");
         }else{
-            return console.log("producto no encontrado");
+            return "producto no encontrado";
         }
     }
 }
