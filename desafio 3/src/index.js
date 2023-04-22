@@ -4,10 +4,12 @@ import multer from "multer";
 import { engine } from "express-handlebars";
 import * as path from 'path'
 import { Server } from "socket.io";
+import mongoose from "mongoose";
 //-----RUTAS
 import routerProduct from "./routes/productos.routes.js";
 import routerCarrito from "./routes/carritos.routes.js";
 import routerSocket from "./routes/socket.routes.js";
+import routerUser from "./routes/users.routes.js";
 
 import { ProductManager } from "./controllers/ProductManager.js";
 
@@ -68,23 +70,14 @@ app.use(express.urlencoded({extended: true}))
 app.engine('handlebars', engine());
 app.set("view engine", 'handlebars');
 app.set('views', path.resolve(__dirname, './views'))
+//Mongoose
+mongoose.connect("mongodb+srv://Atchiam:Atchiamcoderhouse@cluster0.gbxrbnr.mongodb.net/?retryWrites=true&w=majority")
+.then(() => console.log("BD Conectado"))
+.catch(error => console.log("error" +error ))
 
 //--------Routes
-app.use('/static', express.static(__dirname + '/public'))
 app.use('/', express.static(__dirname + '/public'))
-app.use('/api/products', routerProduct)
-app.use('/api/carts',routerCarrito)
-app.post('/upload',upload.single("producto"), (req,res) => {//poner en el POSTMAN producto como key para mandar la foto
-    console.log(req.body)
-    console.log(req.file)
-    res.send("Imagen cargada")
-})
 app.use('/', routerSocket)
-
-//HBS (HandleBarS)
-// app.get('/', (req,res)=>{
-//     res.render("home",{//renderizar/mostrar el siguiente contenido
-//     mensaje: "wachim"
-//     })
-// })
-
+app.use('/api/products', routerProduct) 
+app.use('/api/carts',routerCarrito)
+app.use('/users', routerUser)
